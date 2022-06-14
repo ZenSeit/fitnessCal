@@ -9,9 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -88,9 +86,16 @@ public class User {
 	@JsonIgnore
 	private LocalDate updated_at;
 
-	@ManyToMany
-	@JoinTable(name = "relusersfood", joinColumns = @JoinColumn(name = "id_user"), inverseJoinColumns = @JoinColumn(name = "id_food"))
-	private List<Food> myFood;
+	/*
+	 * @ManyToMany
+	 * 
+	 * @JoinTable(name = "relusersfood", joinColumns = @JoinColumn(name =
+	 * "id_user"), inverseJoinColumns = @JoinColumn(name = "id_food")) private
+	 * List<Food> myFood;
+	 */
+
+	@OneToMany(mappedBy = "us")
+	private List<RelationUF> myFood;
 
 	@Transient
 	private double bmrCalories;
@@ -100,6 +105,8 @@ public class User {
 	private double caloriesMaintance;
 	@Transient
 	private double caloriesGoal;
+	@Transient
+	private double currentlyCalories;
 
 	// Contructors
 	public User() {
@@ -206,14 +213,10 @@ public class User {
 		}
 	}
 
-	@Override
-	public String toString() {
-		return "User [profilePhoto=" + profilePhoto + ", nickname=" + nickname + ", password=" + password + ", email="
-				+ email + ", name=" + name + ", lastname=" + lastname + ", birthDay=" + birthDay + ", gender=" + gender
-				+ ", country=" + country + ", weight=" + weight + ", height=" + height + ", fitnessGoal=" + fitnessGoal
-				+ ", activityDay=" + activityDay + ", created_at=" + created_at + ", deleted_at=" + deleted_at
-				+ ", updated_at=" + updated_at + ", bmrCalories=" + bmrCalories + ", age=" + age
-				+ ", caloriesMaintance=" + caloriesMaintance + ", caloriesGoal=" + caloriesGoal + "]";
-	}
+	public void estCurrentCalories() {
+		this.currentlyCalories = 0;
 
+		this.myFood.forEach(f -> this.currentlyCalories += f.getCaloriesPerQ());
+
+	}
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dao.UserDaoImp;
@@ -91,6 +92,21 @@ public class UserController {
 			return null;
 		}
 		return UDao.getUserId(id).stream().peek(this::setSpecialData).collect(Collectors.toList());
+	}
+
+	@RequestMapping(value = "addFooduser/{id}")
+	public String addFU(@PathVariable Long id, @RequestParam Long idFood, @RequestParam double qFood) {
+		return UDao.addFood(id, idFood, qFood);
+	}
+
+	@RequestMapping(value = "deleteFooduser/{idus}")
+	public String deleteFU(@PathVariable Long idus, @RequestParam Long idRel) {
+		return UDao.deleteFoodFromUser(idus, idRel);
+	}
+
+	@RequestMapping(value = "updateFooduser/{idus}")
+	public String updateFoodUser(@PathVariable Long idus, @RequestParam Long idRel, @RequestParam double nQuantity) {
+		return UDao.updateFoodToUser(idus, idRel, nQuantity);
 	}
 
 	// Helpers

@@ -3,6 +3,7 @@ package com.example.demo.dao;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -91,7 +92,7 @@ public class FoodDaoImp implements FoodDao {
 
 	@Override
 	public List<Food> listFood() {
-		return dataFood.findBydeletedatIsNull();
+		return dataFood.findBydeletedatIsNull().stream().peek(f -> f.calculateCalories()).collect(Collectors.toList());
 	}
 
 }

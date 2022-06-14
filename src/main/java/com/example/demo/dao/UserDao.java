@@ -18,4 +18,10 @@ public interface UserDao {
 
 	public List<User> getUserId(Long id);
 
+	String addFood(Long idUs, Long idFood, double qFood);
+
+	String deleteFoodFromUser(Long idUs, Long idRel);
+
+	String updateFoodToUser(Long idUs, Long idRel, double nQuantity);
+
 }

@@ -8,8 +8,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -50,9 +51,18 @@ public class Food {
 	@Column(name = "description")
 	private String description;
 
+	@Transient
+	private double calories;
+
+	/*
+	 * @JsonIgnore
+	 * 
+	 * @ManyToMany(mappedBy = "myFood") private List<User> users;
+	 */
+
 	@JsonIgnore
-	@ManyToMany(mappedBy = "myFood")
-	private List<User> users;
+	@OneToMany(mappedBy = "fd")
+	private List<RelationUF> myFood;
 
 	// Tracks
 	@CreationTimestamp
@@ -65,5 +75,9 @@ public class Food {
 	@Column(name = "updatedat")
 	@JsonIgnore
 	private LocalDate updated_at;
+
+	public void calculateCalories() {
+		this.calories = this.carbsQGr * 4 + this.proteinQGr * 4 + this.fatQGr * 9;
+	}
 
 }
