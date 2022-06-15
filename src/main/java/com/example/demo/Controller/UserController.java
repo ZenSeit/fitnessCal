@@ -1,7 +1,6 @@
 package com.example.demo.Controller;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,10 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dao.UserDaoImp;
+import com.example.demo.model.RelationUF;
 import com.example.demo.model.User;
-
-import de.mkammerer.argon2.Argon2;
-import de.mkammerer.argon2.Argon2Factory;
 
 @CrossOrigin(value = "*")
 @RestController()
@@ -41,7 +38,7 @@ public class UserController {
 	 */
 	@RequestMapping(value = "getUsers")
 	public List<User> getUsers() {
-		return UDao.getUsers().stream().peek(this::setSpecialData).collect(Collectors.toList());
+		return UDao.getUsers();
 
 	}
 
@@ -72,11 +69,6 @@ public class UserController {
 
 	@PatchMapping(value = "updateUser/{id}")
 	public String UpdateUserById(@PathVariable Long id, @RequestBody User us) {
-		if (us.getPassword() != null) {
-			Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
-			String hash = argon2.hash(1, 1024, 1, us.getPassword());
-			us.setPassword(hash);
-		}
 		return UDao.updateUser(id, us);
 
 	}
@@ -88,10 +80,13 @@ public class UserController {
 
 	@RequestMapping(value = "getUser/{id}")
 	public List<User> getUser(@PathVariable Long id) {
+
 		if (UDao.getUserId(id) == null) {
 			return null;
 		}
-		return UDao.getUserId(id).stream().peek(this::setSpecialData).collect(Collectors.toList());
+
+		return UDao.getUserId(id);
+
 	}
 
 	@RequestMapping(value = "addFooduser/{id}")
@@ -109,13 +104,11 @@ public class UserController {
 		return UDao.updateFoodToUser(idus, idRel, nQuantity);
 	}
 
-	// Helpers
-
-	private void setSpecialData(User us) {
-		us.setBmrCalories(us.calculateBMR(us.getGender(), us.calculateAge()));
-		us.setAge(us.calculateAge());
-		us.setCaloriesMaintance(us.estimateCaloriesMaintance());
-		us.setCaloriesGoal(us.estimateCaloriesGoal());
+	@RequestMapping(value = "prueba/{idus}")
+	public List<RelationUF> probando(@PathVariable Long idus) {
+		return UDao.getFoodByUser(idus);
 	}
+
+	// Helpers
 
 }

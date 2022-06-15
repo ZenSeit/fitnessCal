@@ -9,19 +9,20 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.JoinFormula;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "relusersfood")
 @Getter
 @Setter
+@ToString
 public class RelationUF {
 
 	@Id
@@ -29,14 +30,15 @@ public class RelationUF {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@JsonManagedReference
 	@ManyToOne
 	@JsonProperty(access = Access.WRITE_ONLY)
 	@JoinColumn(name = "id_user")
 	private User us;
 
+	@JsonManagedReference
 	@ManyToOne
 	@JoinColumn(name = "id_food")
-	@JoinFormula(value = "SELECT * FROM food where deletedat=null")
 	private Food fd;
 
 	private double quantityuser;

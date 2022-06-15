@@ -2,6 +2,7 @@ package com.example.demo.dao;
 
 import java.util.List;
 
+import com.example.demo.model.RelationUF;
 import com.example.demo.model.User;
 
 public interface UserDao {
@@ -23,5 +24,7 @@ public interface UserDao {
 	String deleteFoodFromUser(Long idUs, Long idRel);
 
 	String updateFoodToUser(Long idUs, Long idRel, double nQuantity);
+
+	List<RelationUF> getFoodByUser(Long idUs);
 
 }

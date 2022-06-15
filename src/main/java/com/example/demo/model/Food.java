@@ -3,6 +3,7 @@ package com.example.demo.model;
 import java.time.LocalDate;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,8 +14,11 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.Where;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -29,6 +33,8 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@Where(clause = "deletedat is null")
+@SQLDelete(sql = "UPDATE Food SET deletedat=now() WHERE id = ?")
 public class Food {
 
 	@Id
@@ -60,8 +66,8 @@ public class Food {
 	 * @ManyToMany(mappedBy = "myFood") private List<User> users;
 	 */
 
-	@JsonIgnore
-	@OneToMany(mappedBy = "fd")
+	@JsonBackReference
+	@OneToMany(mappedBy = "fd", cascade = CascadeType.ALL)
 	private List<RelationUF> myFood;
 
 	// Tracks

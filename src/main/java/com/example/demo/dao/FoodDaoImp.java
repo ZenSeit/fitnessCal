@@ -1,6 +1,5 @@
 package com.example.demo.dao;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -41,8 +40,9 @@ public class FoodDaoImp implements FoodDao {
 		try {
 			Food fd = dataFood.findById(id).get();
 			if (fd != null && fd.getDeletedat() == null) {
-				fd.setDeletedat(LocalDate.now());
-				dataFood.save(fd);
+				// fd.setDeletedat(LocalDate.now());
+				dataFood.delete(fd);
+
 				return "Food deleted";
 			}
 
@@ -92,7 +92,7 @@ public class FoodDaoImp implements FoodDao {
 
 	@Override
 	public List<Food> listFood() {
-		return dataFood.findBydeletedatIsNull().stream().peek(f -> f.calculateCalories()).collect(Collectors.toList());
+		return dataFood.findAll().stream().peek(f -> f.calculateCalories()).collect(Collectors.toList());
 	}
 
 }

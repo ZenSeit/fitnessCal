@@ -3,6 +3,7 @@ package com.example.demo.dao;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -94,8 +95,12 @@ public class UserDaoImp implements UserDao {
 					uDB.setEmail(us.getEmail());
 				if (us.getProfilePhoto() != null)
 					uDB.setProfilePhoto(us.getProfilePhoto());
-				if (us.getPassword() != null)
-					uDB.setPassword(us.getPassword());
+				if (us.getPassword() != null) {
+					Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
+					String hash = argon2.hash(1, 1024, 1, us.getPassword());
+					uDB.setPassword(hash);
+				}
+				uDB.setPassword(us.getPassword());
 				if (us.getFitnessGoal() != 0)
 					uDB.setFitnessGoal(us.getFitnessGoal());
 				if (us.getActivityDay() != 0)
@@ -138,8 +143,11 @@ public class UserDaoImp implements UserDao {
 		try {
 			List<User> userReturn = new ArrayList<>();
 			User myUs = eManager.find(User.class, id);
+
 			if (myUs != null && myUs.getDeleted_at() == null) {
+
 				userReturn.add(myUs);
+
 				userReturn.forEach(us -> {
 					us.getMyFood().forEach(f -> {
 						f.getFd().calculateCalories();
@@ -147,7 +155,8 @@ public class UserDaoImp implements UserDao {
 					});
 					us.estCurrentCalories();
 				});
-				return userReturn;
+
+				return userReturn.stream().peek(this::setSpecialData).collect(Collectors.toList());
 			}
 
 			return null;
@@ -217,6 +226,28 @@ public class UserDaoImp implements UserDao {
 		}
 	}
 
+	@Override
+	public List<RelationUF> getFoodByUser(Long idUs) {
+
+		/*
+		 * String query = "From RelationUF where id_user=:idUs"; return
+		 * eManager.createQuery(query).setParameter("idUs", idUs).getResultList();
+		 */
+
+		User us = eManager.find(User.class, idUs);
+
+		if (us != null) {
+			us.getMyFood().forEach(f -> {
+				f.getFd().calculateCalories();
+				f.calculateCaloriesPerQ(f.getFd().getReferenceQuantity(), f.getFd().getCalories());
+			});
+
+			return us.getMyFood();
+		}
+		return null;
+
+	}
+
 	// Helpers
 
 	public String hashPassword(String pass) {
@@ -230,6 +261,13 @@ public class UserDaoImp implements UserDao {
 			return true;
 		}
 		return false;
+	}
+
+	private void setSpecialData(User us) {
+		us.setBmrCalories(us.calculateBMR(us.getGender(), us.calculateAge()));
+		us.setAge(us.calculateAge());
+		us.setCaloriesMaintance(us.estimateCaloriesMaintance());
+		us.setCaloriesGoal(us.estimateCaloriesGoal());
 	}
 
 }
