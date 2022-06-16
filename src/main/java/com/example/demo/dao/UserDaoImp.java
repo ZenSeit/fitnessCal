@@ -153,7 +153,6 @@ public class UserDaoImp implements UserDao {
 						f.getFd().calculateCalories();
 						f.calculateCaloriesPerQ(f.getFd().getReferenceQuantity(), f.getFd().getCalories());
 					});
-					us.estCurrentCalories();
 				});
 
 				return userReturn.stream().peek(this::setSpecialData).collect(Collectors.toList());
@@ -227,7 +226,7 @@ public class UserDaoImp implements UserDao {
 	}
 
 	@Override
-	public List<RelationUF> getFoodByUser(Long idUs) {
+	public List<RelationUF> getFoodByUser(Long idUs, int day) {
 
 		/*
 		 * String query = "From RelationUF where id_user=:idUs"; return
@@ -237,12 +236,26 @@ public class UserDaoImp implements UserDao {
 		User us = eManager.find(User.class, idUs);
 
 		if (us != null) {
-			us.getMyFood().forEach(f -> {
+
+			/*
+			 * us.getMyFood().forEach(f -> { f.getFd().calculateCalories();
+			 * f.calculateCaloriesPerQ(f.getFd().getReferenceQuantity(),
+			 * f.getFd().getCalories()); });
+			 * 
+			 * return us.getMyFood();
+			 */
+
+			// Code to make a filter a select food for instance per day
+
+			List<RelationUF> filter = us.getMyFood().stream().filter(f -> f.getDay() == day).toList();
+
+			filter.forEach(f -> {
 				f.getFd().calculateCalories();
 				f.calculateCaloriesPerQ(f.getFd().getReferenceQuantity(), f.getFd().getCalories());
 			});
 
-			return us.getMyFood();
+			return filter;
+
 		}
 		return null;
 
@@ -266,7 +279,7 @@ public class UserDaoImp implements UserDao {
 	private void setSpecialData(User us) {
 		us.setBmrCalories(us.calculateBMR(us.getGender(), us.calculateAge()));
 		us.setAge(us.calculateAge());
-		us.setCaloriesMaintance(us.estimateCaloriesMaintance());
+		us.setCaloriesMaintenance(us.estimateCaloriesMaintenance());
 		us.setCaloriesGoal(us.estimateCaloriesGoal());
 	}
 

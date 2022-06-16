@@ -1,6 +1,8 @@
 package com.example.demo.Controller;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.dao.UserDaoImp;
 import com.example.demo.model.RelationUF;
 import com.example.demo.model.User;
+import com.example.demo.utils.AuthenticatorJWT;
 
 @CrossOrigin(value = "*")
 @RestController()
@@ -28,16 +32,23 @@ public class UserController {
 	@Autowired
 	private UserDaoImp UDao;
 
+	@Autowired
+	private AuthenticatorJWT jwta;
+
 	/*
 	 * @Autowired private UserRepository Urep;
 	 */
 
 	/**
 	 * 
-	 * @return List of user that are available in DB
+	 * @return List of users that are available in DB
 	 */
 	@RequestMapping(value = "getUsers")
-	public List<User> getUsers() {
+	public List<User> getUsers(@RequestHeader(value = "Authorization") String token) {
+		if (token == null)
+			return null;
+		if (!validarToken(token))
+			return null;
 		return UDao.getUsers();
 
 	}
@@ -104,11 +115,22 @@ public class UserController {
 		return UDao.updateFoodToUser(idus, idRel, nQuantity);
 	}
 
-	@RequestMapping(value = "prueba/{idus}")
-	public List<RelationUF> probando(@PathVariable Long idus) {
-		return UDao.getFoodByUser(idus);
+	@RequestMapping(value = "getFoodforuser/{idus}")
+	public List<RelationUF> getFoodUser(@PathVariable Long idus, @RequestParam(defaultValue = "0") Integer day) {
+		return UDao.getFoodByUser(idus, day);
+	}
+
+	@PostMapping(value = "addManyFoodtouser/{id}")
+	public List<String> addManyFoodToUser(@PathVariable Long id, @RequestBody List<Map<String, Long>> todo) {
+		return todo.stream().map(t -> UDao.addFood(id, t.get("idFood"), t.get("nQuan"))).collect(Collectors.toList());
+
 	}
 
 	// Helpers
+
+	private boolean validarToken(String token) {
+		String usuarioId = jwta.getKey(token);
+		return usuarioId != null;
+	}
 
 }

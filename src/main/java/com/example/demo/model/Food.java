@@ -18,7 +18,6 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.Where;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -66,7 +65,8 @@ public class Food {
 	 * @ManyToMany(mappedBy = "myFood") private List<User> users;
 	 */
 
-	@JsonBackReference
+	// @JsonBackReference
+	@JsonIgnore
 	@OneToMany(mappedBy = "fd", cascade = CascadeType.ALL)
 	private List<RelationUF> myFood;
 

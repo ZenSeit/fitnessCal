@@ -25,6 +25,6 @@ public interface UserDao {
 
 	String updateFoodToUser(Long idUs, Long idRel, double nQuantity);
 
-	List<RelationUF> getFoodByUser(Long idUs);
+	List<RelationUF> getFoodByUser(Long idUs, int day);
 
 }

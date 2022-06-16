@@ -43,6 +43,8 @@ public class RelationUF {
 
 	private double quantityuser;
 
+	private int day;
+
 	@Transient
 	private double caloriesPerQ;
 

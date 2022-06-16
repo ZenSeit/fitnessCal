@@ -71,6 +71,7 @@ public class User {
 	private double weight;
 	@Column(name = "height")
 	private double height;
+	// 0:maintenance 1:bulk 2:cut
 	@Column(name = "fitnessgoal")
 	private int fitnessGoal;
 	// 0: no exercise , 1:1/2 time week, 2:2/3 times week, 3:3/5 times week, 4:6/7
@@ -107,11 +108,9 @@ public class User {
 	@Transient
 	private int age;
 	@Transient
-	private double caloriesMaintance;
+	private double caloriesMaintenance;
 	@Transient
 	private double caloriesGoal;
-	@Transient
-	private double currentlyCalories;
 
 	// Contructors
 	public User() {
@@ -168,7 +167,7 @@ public class User {
 
 	}
 
-	public double estimateCaloriesMaintance() {
+	public double estimateCaloriesMaintenance() {
 		switch (this.activityDay) {
 		case 0: {
 
@@ -203,25 +202,19 @@ public class User {
 		switch (this.fitnessGoal) {
 		case 1: {
 
-			return this.caloriesMaintance * 1.1;
+			return this.caloriesMaintenance * 1.1;
 		}
 		case 0: {
 
-			return this.caloriesMaintance;
+			return this.caloriesMaintenance;
 		}
 		case 2: {
 
-			return this.caloriesMaintance * 0.9;
+			return this.caloriesMaintenance * 0.9;
 		}
 		default:
 			throw new IllegalArgumentException("Unexpected value: " + this.fitnessGoal);
 		}
 	}
 
-	public void estCurrentCalories() {
-		this.currentlyCalories = 0;
-
-		this.myFood.forEach(f -> this.currentlyCalories += f.getCaloriesPerQ());
-
-	}
 }
