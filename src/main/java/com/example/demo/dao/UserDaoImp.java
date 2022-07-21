@@ -57,7 +57,7 @@ public class UserDaoImp implements UserDao {
 
 		} catch (Exception e) {
 			e.getMessage();
-			return "La capturamos";
+			return "In this moment we can't process your requirement";
 		}
 	}
 

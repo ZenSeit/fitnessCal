@@ -105,7 +105,7 @@ public class UserController {
 		return UDao.addFood(id, idFood, qFood);
 	}
 
-	@RequestMapping(value = "deleteFooduser/{idus}")
+	@DeleteMapping(value = "deleteFooduser/{idus}")
 	public String deleteFU(@PathVariable Long idus, @RequestParam Long idRel) {
 		return UDao.deleteFoodFromUser(idus, idRel);
 	}

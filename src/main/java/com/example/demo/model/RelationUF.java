@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -9,7 +10,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
@@ -26,7 +26,6 @@ import lombok.ToString;
 public class RelationUF {
 
 	@Id
-	@JsonIgnore
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
@@ -43,7 +42,11 @@ public class RelationUF {
 
 	private double quantityuser;
 
+	// Day:0 Monday, 1 Tuesday,2 Wednesday,3 Thursday,4 Friday,5 Saturday,6 Sunday
 	private int day;
+
+	@Column(name = "formquantity")
+	private int formQuantity;
 
 	@Transient
 	private double caloriesPerQ;

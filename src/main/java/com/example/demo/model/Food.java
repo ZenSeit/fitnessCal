@@ -72,6 +72,7 @@ public class Food {
 
 	// Tracks
 	@CreationTimestamp
+	@JsonIgnore
 	@Column(name = "createdat")
 	private LocalDate created_at;
 	@Column(name = "deletedat")
