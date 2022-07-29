@@ -1,8 +1,6 @@
 package com.example.demo.Controller;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +21,7 @@ import com.example.demo.dao.UserDaoImp;
 import com.example.demo.model.RelationUF;
 import com.example.demo.model.User;
 import com.example.demo.utils.AuthenticatorJWT;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @CrossOrigin(value = "*")
 @RestController()
@@ -45,11 +44,12 @@ public class UserController {
 	 */
 	@RequestMapping(value = "getUsers")
 	public List<User> getUsers(@RequestHeader(value = "Authorization") String token) {
+
 		if (token == null)
 			return null;
-		if (!validarToken(token))
-			return null;
-		return UDao.getUsers();
+		if (validarToken(token) != null)
+			return UDao.getUsers();
+		return null;
 
 	}
 
@@ -90,19 +90,24 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "getUser/{id}")
-	public List<User> getUser(@PathVariable Long id) {
+	public List<User> getUser(@RequestHeader(value = "Authorization") String token, @PathVariable Long id) {
 
-		if (UDao.getUserId(id) == null) {
+		if (token == null)
 			return null;
-		}
-
-		return UDao.getUserId(id);
-
+		if (Long.parseLong(validarToken(token)) == id)
+			return UDao.getUserId(id);
+		;
+		return null;
 	}
 
-	@RequestMapping(value = "addFooduser/{id}")
-	public String addFU(@PathVariable Long id, @RequestParam Long idFood, @RequestParam double qFood) {
-		return UDao.addFood(id, idFood, qFood);
+	@PostMapping(value = "addFooduser/{id}")
+	public String addFU(@PathVariable Long id, @RequestBody ObjectNode json) {
+		if (json.has("idFood") && json.has("qFood") && json.has("day") && json.has("formQ")) {
+			return UDao.addFood(id, json.get("idFood").asLong(), json.get("qFood").asDouble(), json.get("day").asInt(),
+					json.get("formQ").asInt());
+		}
+		return "Invalid requirement";
+
 	}
 
 	@DeleteMapping(value = "deleteFooduser/{idus}")
@@ -110,9 +115,17 @@ public class UserController {
 		return UDao.deleteFoodFromUser(idus, idRel);
 	}
 
-	@RequestMapping(value = "updateFooduser/{idus}")
-	public String updateFoodUser(@PathVariable Long idus, @RequestParam Long idRel, @RequestParam double nQuantity) {
-		return UDao.updateFoodToUser(idus, idRel, nQuantity);
+	@PostMapping(value = "updateFooduser/{idus}")
+	public String updateFoodUser(@PathVariable Long idus, @RequestParam Long idRel, @RequestBody ObjectNode json) {
+		if (json.has("nQuantity") && json.has("formQ")) {
+			return UDao.updateFoodToUser(idus, idRel, json.get("nQuantity").asDouble(), json.get("formQ").asInt());
+		}
+		return "Invalid requirement";
+	}
+
+	@RequestMapping(value = "getOfooduser/{idus}")
+	public RelationUF getOFoodUser(@PathVariable Long idus, @RequestParam Long idRel) {
+		return UDao.getOFoodToUser(idus, idRel);
 	}
 
 	@RequestMapping(value = "getFoodforuser/{idus}")
@@ -120,17 +133,19 @@ public class UserController {
 		return UDao.getFoodByUser(idus, day);
 	}
 
-	@PostMapping(value = "addManyFoodtouser/{id}")
-	public List<String> addManyFoodToUser(@PathVariable Long id, @RequestBody List<Map<String, Long>> todo) {
-		return todo.stream().map(t -> UDao.addFood(id, t.get("idFood"), t.get("nQuan"))).collect(Collectors.toList());
-
-	}
+	/*
+	 * @PostMapping(value = "addManyFoodtouser/{id}") public List<String>
+	 * addManyFoodToUser(@PathVariable Long id, @RequestBody List<Map<String, Long>>
+	 * todo) { return todo.stream().map(t -> UDao.addFood(id, t.get("idFood"),
+	 * t.get("nQuan"))).collect(Collectors.toList());
+	 * 
+	 * }
+	 */
 
 	// Helpers
 
-	private boolean validarToken(String token) {
-		String usuarioId = jwta.getKey(token);
-		return usuarioId != null;
+	private String validarToken(String token) {
+		return jwta.getKey(token);
 	}
 
 }

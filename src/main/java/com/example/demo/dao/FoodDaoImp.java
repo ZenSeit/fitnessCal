@@ -2,6 +2,7 @@ package com.example.demo.dao;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,6 +94,14 @@ public class FoodDaoImp implements FoodDao {
 	@Override
 	public List<Food> listFood() {
 		return dataFood.findAll().stream().peek(f -> f.calculateCalories()).collect(Collectors.toList());
+	}
+
+	@Override
+	public Optional<Food> oneFood(Long id) {
+		if (id != null) {
+			return dataFood.findById(id);
+		}
+		return null;
 	}
 
 }

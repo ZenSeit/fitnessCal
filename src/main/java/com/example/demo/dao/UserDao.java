@@ -19,11 +19,13 @@ public interface UserDao {
 
 	public List<User> getUserId(Long id);
 
-	String addFood(Long idUs, Long idFood, double qFood);
+	String addFood(Long idUs, Long idFood, double qFood, int day, int formQ);
 
 	String deleteFoodFromUser(Long idUs, Long idRel);
 
-	String updateFoodToUser(Long idUs, Long idRel, double nQuantity);
+	String updateFoodToUser(Long idUs, Long idRel, double nQuantity, int formQ);
+
+	RelationUF getOFoodToUser(Long idUs, Long idRel);
 
 	List<RelationUF> getFoodByUser(Long idUs, int day);
 

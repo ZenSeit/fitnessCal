@@ -35,7 +35,7 @@ public class RelationUF {
 	@JoinColumn(name = "id_user")
 	private User us;
 
-	@JsonManagedReference
+	// @JsonManagedReference
 	@ManyToOne
 	@JoinColumn(name = "id_food")
 	private Food fd;

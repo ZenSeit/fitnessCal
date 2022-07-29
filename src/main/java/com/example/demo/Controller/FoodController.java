@@ -1,10 +1,12 @@
 package com.example.demo.Controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +36,11 @@ public class FoodController {
 	public String addFood(@RequestBody Food fd) {
 
 		return foodDao.addFood(fd);
+	}
+
+	@GetMapping(value = "getFood/{id}")
+	public Optional<Food> getFood(@PathVariable Long id) {
+		return foodDao.oneFood(id);
 	}
 
 	@DeleteMapping(value = "deleteFood/{id}")

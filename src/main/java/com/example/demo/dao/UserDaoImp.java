@@ -168,7 +168,7 @@ public class UserDaoImp implements UserDao {
 
 	@Transactional
 	@Override
-	public String addFood(Long idUs, Long idFood, double qFood) {
+	public String addFood(Long idUs, Long idFood, double qFood, int day, int formQ) {
 		try {
 			User myUs = eManager.find(User.class, idUs);
 			Food myFood = eManager.find(Food.class, idFood);
@@ -177,6 +177,8 @@ public class UserDaoImp implements UserDao {
 				uf.setFd(myFood);
 				uf.setUs(myUs);
 				uf.setQuantityuser(qFood);
+				uf.setDay(day);
+				uf.setFormQuantity(formQ);
 				eManager.merge(uf);
 				return "Food was added.";
 			}
@@ -208,13 +210,14 @@ public class UserDaoImp implements UserDao {
 
 	@Transactional
 	@Override
-	public String updateFoodToUser(Long idUs, Long idRel, double nQuantity) {
+	public String updateFoodToUser(Long idUs, Long idRel, double nQuantity, int formQ) {
 		try {
 			User myUs = eManager.find(User.class, idUs);
 			if (myUs != null && myUs.getDeleted_at() == null) {
 				RelationUF rel = eManager.find(RelationUF.class, idRel);
 				if (rel != null) {
 					rel.setQuantityuser(nQuantity);
+					rel.setFormQuantity(formQ);
 					eManager.merge(rel);
 					return "Quantity was update";
 				}
@@ -222,6 +225,21 @@ public class UserDaoImp implements UserDao {
 			return "This action can't do";
 		} catch (IllegalArgumentException e) {
 			return "Something was wrong. Try again";
+		}
+	}
+
+	@Override
+	public RelationUF getOFoodToUser(Long idUs, Long idRel) {
+		try {
+			User myUs = eManager.find(User.class, idUs);
+			if (myUs != null && myUs.getDeleted_at() == null) {
+				RelationUF rel = eManager.find(RelationUF.class, idRel);
+				return rel;
+			}
+			return null;
+		} catch (IllegalArgumentException e) {
+			System.out.println("error: " + e.getStackTrace());
+			return null;
 		}
 	}
 
