@@ -17,7 +17,6 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -99,7 +98,8 @@ public class User {
 	 * List<Food> myFood;
 	 */
 
-	@JsonBackReference
+	// @JsonBackReference
+	@JsonIgnore
 	@OneToMany(mappedBy = "us", fetch = FetchType.LAZY)
 	private List<RelationUF> myFood;
 

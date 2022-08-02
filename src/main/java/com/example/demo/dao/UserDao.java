@@ -2,6 +2,8 @@ package com.example.demo.dao;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.example.demo.model.RelationUF;
 import com.example.demo.model.User;
 
@@ -28,5 +30,7 @@ public interface UserDao {
 	RelationUF getOFoodToUser(Long idUs, Long idRel);
 
 	List<RelationUF> getFoodByUser(Long idUs, int day);
+
+	void saveImage(Long id, MultipartFile imageFile) throws Exception;
 
 }

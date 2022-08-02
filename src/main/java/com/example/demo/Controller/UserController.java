@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.dao.UserDaoImp;
 import com.example.demo.model.RelationUF;
@@ -126,6 +127,18 @@ public class UserController {
 	@RequestMapping(value = "getOfooduser/{idus}")
 	public RelationUF getOFoodUser(@PathVariable Long idus, @RequestParam Long idRel) {
 		return UDao.getOFoodToUser(idus, idRel);
+	}
+
+	@PostMapping(value = "updateImage/{idus}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public String updateImage(@PathVariable Long idus, @RequestBody MultipartFile imageFile) {
+		try {
+			UDao.saveImage(idus, imageFile);
+			return "Done";
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "Failed update";
+		}
 	}
 
 	@RequestMapping(value = "getFoodforuser/{idus}")

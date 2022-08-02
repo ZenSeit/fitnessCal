@@ -1,5 +1,8 @@
 package com.example.demo.dao;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +14,7 @@ import javax.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.model.Food;
 import com.example.demo.model.RelationUF;
@@ -83,8 +87,9 @@ public class UserDaoImp implements UserDao {
 	public String updateUser(Long id, User us) {
 		try {
 			User uDB = eManager.find(User.class, id);
-			if (uDB != null && uDB.getDeleted_at() == null) {
-				// uDB.setNickname(us.getNickname());
+
+			if (uDB != null && uDB.getDeleted_at() == null) { //
+				uDB.setNickname(us.getNickname());
 				if (us.getName() != null)
 					uDB.setName(us.getName());
 				if (us.getLastname() != null)
@@ -115,6 +120,7 @@ public class UserDaoImp implements UserDao {
 				eManager.merge(uDB);
 				return "Update succesfully completed";
 			}
+
 			return "User doesn't exist. We can't update this resource.";
 		} catch (IllegalArgumentException e) {
 			e.getMessage();
@@ -241,6 +247,26 @@ public class UserDaoImp implements UserDao {
 			System.out.println("error: " + e.getStackTrace());
 			return null;
 		}
+	}
+
+	@Override
+	@Transactional
+	public void saveImage(Long id, MultipartFile imageFile) throws Exception {
+		String frontFolder = "Images/" + id + "/";
+
+		String folder = "/Users/mayasoft/Documents/ReactPractice/fitnetsscalfront/fitnesscal/src/" + frontFolder;
+		Path dirpath = Paths.get(folder);
+		if (!Files.exists(dirpath)) {
+			Files.createDirectories(dirpath);
+		}
+		byte[] bytes = imageFile.getBytes();
+		Path path = Paths.get(folder + imageFile.getOriginalFilename()); //
+		Files.write(path, bytes);
+
+		User us = eManager.find(User.class, id);
+		us.setProfilePhoto(frontFolder + imageFile.getOriginalFilename());
+		eManager.merge(us);
+
 	}
 
 	@Override

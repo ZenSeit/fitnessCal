@@ -59,7 +59,6 @@ public class FoodDaoImp implements FoodDao {
 	@Override
 	public String updateFood(Long id, Food fdU) {
 		try {
-			System.out.println(fdU);
 
 			Food fd = dataFood.findById(id).get();
 			if (fd != null && fd.getDeletedat() == null) {
