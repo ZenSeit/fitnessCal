@@ -89,7 +89,7 @@ public class UserDaoImp implements UserDao {
 			User uDB = eManager.find(User.class, id);
 
 			if (uDB != null && uDB.getDeleted_at() == null) { //
-				uDB.setNickname(us.getNickname());
+				// uDB.setNickname(us.getNickname());
 				if (us.getName() != null)
 					uDB.setName(us.getName());
 				if (us.getLastname() != null)
@@ -105,7 +105,7 @@ public class UserDaoImp implements UserDao {
 					String hash = argon2.hash(1, 1024, 1, us.getPassword());
 					uDB.setPassword(hash);
 				}
-				uDB.setPassword(us.getPassword());
+				// uDB.setPassword(us.getPassword());
 				if (us.getFitnessGoal() != 0)
 					uDB.setFitnessGoal(us.getFitnessGoal());
 				if (us.getActivityDay() != 0)
@@ -266,6 +266,21 @@ public class UserDaoImp implements UserDao {
 		User us = eManager.find(User.class, id);
 		us.setProfilePhoto(frontFolder + imageFile.getOriginalFilename());
 		eManager.merge(us);
+	}
+
+	@Override
+	@Transactional
+	public void deleteImage(Long id) throws Exception {
+		User us = eManager.find(User.class, id);
+		if (us.getProfilePhoto() != null) {
+			String mainRoute = "/Users/mayasoft/Documents/ReactPractice/fitnetsscalfront/fitnesscal/src/";
+			String SpRoute = mainRoute + us.getProfilePhoto();
+			Path dirpath = Paths.get(SpRoute);
+			if (Files.deleteIfExists(dirpath) == true) {
+				us.setProfilePhoto(null);
+				eManager.merge(us);
+			}
+		}
 
 	}
 

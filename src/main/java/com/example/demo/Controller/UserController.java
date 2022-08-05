@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,12 +65,14 @@ public class UserController {
 	@PostMapping(value = "registerUser", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> sendUser(@RequestBody User user) {
 
+		System.out.println(user);
 		// check that exist nickname,password and email to create an user
-		if (user.getNickname() == null || user.getPassword() == null || user.getEmail() == null) {
+		if (user.getNickname() == null || user.getPassword() == null || user.getEmail() == null
+				|| user.getBirthDay() == null) {
 			return new ResponseEntity<String>("You need to fill all fields", HttpStatus.I_AM_A_TEAPOT);
 		}
 
-		return new ResponseEntity<String>(UDao.registerUser(user), HttpStatus.I_AM_A_TEAPOT);
+		return new ResponseEntity<String>(UDao.registerUser(user), HttpStatus.CREATED);
 	}
 
 	@DeleteMapping(value = "delUser/{id}")
@@ -81,6 +84,7 @@ public class UserController {
 
 	@PatchMapping(value = "updateUser/{id}")
 	public String UpdateUserById(@PathVariable Long id, @RequestBody User us) {
+		System.out.println(us);
 		return UDao.updateUser(id, us);
 
 	}
@@ -133,6 +137,18 @@ public class UserController {
 	public String updateImage(@PathVariable Long idus, @RequestBody MultipartFile imageFile) {
 		try {
 			UDao.saveImage(idus, imageFile);
+			return "Done";
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "Failed update";
+		}
+	}
+
+	@PutMapping(value = "deleteImage/{idus}")
+	public String deleteImage(@PathVariable Long idus) {
+		try {
+			UDao.deleteImage(idus);
 			return "Done";
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

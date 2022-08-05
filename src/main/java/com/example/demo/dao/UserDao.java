@@ -33,4 +33,6 @@ public interface UserDao {
 
 	void saveImage(Long id, MultipartFile imageFile) throws Exception;
 
+	void deleteImage(Long id) throws Exception;
+
 }
